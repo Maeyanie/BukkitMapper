@@ -87,6 +87,7 @@ echo "Done.\n";
 
 
 echo "Mapping methods...\n";
+@unlink("to_second_method_mappings");
 for ($c = 0; $c < count($classes); $c++) {
 	$class =& $classes[$c];
 	$class["bukkit"] = $classmap[substr(strrchr($class["mcp"], "/"), 1)];
@@ -140,6 +141,8 @@ for ($c = 0; $c < count($classes); $c++) {
 			//echo $class["methods"][$y]["mcp"]." == $mcpmethods[$x]\n";
 			if ($class["methods"][$y]["mcp"] == $mcpmethods[$x]) {
 				//echo "Mapped method $mcpclass.$mcpmethods[$x] -> $class[bukkit].$bukkitmethods[$x]\n";
+				file_put_contents("to_second_method_mappings",
+					"$class[mcp] $mcpmethods[$x] $bukkitmethods[$x]\n", FILE_APPEND);
 				$class["methods"][$y]["bukkit"] = $bukkitmethods[$x];
 				$found = 1;
 			}

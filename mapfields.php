@@ -87,6 +87,7 @@ echo "Done.\n";
 
 
 echo "Mapping fields...\n";
+@unlink("to_second_field_mappings");
 for ($c = 0; $c < count($classes); $c++) {
 	$class =& $classes[$c];
 	$class["bukkit"] = $classmap[substr(strrchr($class["mcp"], "/"), 1)];
@@ -141,6 +142,8 @@ for ($c = 0; $c < count($classes); $c++) {
 		for ($y = 0; $y < count($class["fields"]); $y++) {
 			if ($class["fields"][$y]["mcp"] == $mcpfields[$x]) {
 				//echo "Mapped field $mcpfields[$x] -> $bukkitfields[$x]\n";
+				file_put_contents("to_second_field_mappings",
+					"$class[mcp] $mcpfields[$x] $bukkitfields[$x]\n", FILE_APPEND);
 				$class["fields"][$y]["bukkit"] = $bukkitfields[$x];
 				$found = 1;
 				break;
