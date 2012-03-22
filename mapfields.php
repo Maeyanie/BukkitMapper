@@ -87,7 +87,7 @@ echo "Done.\n";
 
 
 echo "Mapping fields...\n";
-@unlink("to_second_field_mappings");
+$fp = fopen("to_second_field_mappings", "w");
 for ($c = 0; $c < count($classes); $c++) {
 	$class =& $classes[$c];
 	$class["bukkit"] = $classmap[substr(strrchr($class["mcp"], "/"), 1)];
@@ -142,8 +142,7 @@ for ($c = 0; $c < count($classes); $c++) {
 		for ($y = 0; $y < count($class["fields"]); $y++) {
 			if ($class["fields"][$y]["mcp"] == $mcpfields[$x]) {
 				//echo "Mapped field $mcpfields[$x] -> $bukkitfields[$x]\n";
-				file_put_contents("to_second_field_mappings",
-					"$class[mcp] $mcpfields[$x] $bukkitfields[$x]\n", FILE_APPEND);
+				fwrite($fp, "$class[mcp] $mcpfields[$x] $bukkitfields[$x]\n");
 				$class["fields"][$y]["bukkit"] = $bukkitfields[$x];
 				$found = 1;
 				break;
@@ -155,16 +154,17 @@ for ($c = 0; $c < count($classes); $c++) {
 	//$classes[$c] = $class;
 	unset($class);
 }
+fclose($fp);
 
 
 
 echo "Writing to new_conf/fields.csv...\n";
-@unlink("new_conf/fields.csv");
 $lines = file("conf/fields.csv");
+$fp = fopen("new_conf/fields.csv", "w");
 foreach ($lines as $line) {
 	list($searge,$name,$side,$desc) = explode(",", $line, 4);
 	if ($side != 1) {
-		file_put_contents("new_conf/fields.csv", $line, FILE_APPEND);
+		fwrite($fp, $line);
 		continue;
 	}
 	
@@ -186,9 +186,9 @@ foreach ($lines as $line) {
 		$bukkit = $name;
 	}
 	
-	file_put_contents("new_conf/fields.csv", "$searge,$bukkit,$side,$desc", FILE_APPEND);
+	fwrite($fp, "$searge,$bukkit,$side,$desc");
 }
-
+fclose($fp);
 
 
 

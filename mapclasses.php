@@ -91,25 +91,26 @@ echo "Writing to new_conf/server.srg...\n";
 $lines = array();
 $rep_mcp = array();
 $rep_bukkit = array();
-@unlink("new_conf/server.srg");
+$fp = fopen("new_conf/server.srg", "w");
 foreach ($packages as $package) {
-	file_put_contents("new_conf/server.srg", "PK: $package[notch] $package[mcp]\n", FILE_APPEND);
+	fwrite($fp, "PK: $package[notch] $package[mcp]\n");
 }
 foreach ($classes as $class) {
 	$bukkit = substr($class["mcp"], 0, strrpos($class["mcp"], "/"))."/".$class["bukkit"];
 	//echo "CL: $class[notch] $bukkit\n";
-	file_put_contents("new_conf/server.srg", "CL: $class[notch] $bukkit\n", FILE_APPEND);
+	fwrite($fp, "CL: $class[notch] $bukkit\n");
 	$rep_mcp[] = $class["mcp"];
 	$rep_bukkit[] = $bukkit;
 }
 foreach ($fields as $field) {
 	$fieldbukkit = str_replace($rep_mcp, $rep_bukkit, $field["mcp"]);
-	file_put_contents("new_conf/server.srg", "FD: $field[notch] $fieldbukkit\n", FILE_APPEND);
+	fwrite($fp, "FD: $field[notch] $fieldbukkit\n");
 }
 foreach ($methods as $method) {
 	$sigbukkit = str_replace($rep_mcp, $rep_bukkit, $method["mcpsig"]);
-	file_put_contents("new_conf/server.srg", "MD: $method[notch] $method[notchsig] $method[mcp] $sigbukkit\n", FILE_APPEND);
+	fwrite($fp, "MD: $method[notch] $method[notchsig] $method[mcp] $sigbukkit\n");
 }
+fclose($fp);
 
 
 

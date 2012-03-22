@@ -87,7 +87,7 @@ echo "Done.\n";
 
 
 echo "Mapping methods...\n";
-@unlink("to_second_method_mappings");
+$fp = fopen("to_second_method_mappings", "w");
 for ($c = 0; $c < count($classes); $c++) {
 	$class =& $classes[$c];
 	$class["bukkit"] = $classmap[substr(strrchr($class["mcp"], "/"), 1)];
@@ -141,8 +141,7 @@ for ($c = 0; $c < count($classes); $c++) {
 			//echo $class["methods"][$y]["mcp"]." == $mcpmethods[$x]\n";
 			if ($class["methods"][$y]["mcp"] == $mcpmethods[$x]) {
 				//echo "Mapped method $mcpclass.$mcpmethods[$x] -> $class[bukkit].$bukkitmethods[$x]\n";
-				file_put_contents("to_second_method_mappings",
-					"$class[mcp] $mcpmethods[$x] $bukkitmethods[$x]\n", FILE_APPEND);
+				fwrite($fp, "$class[mcp] $mcpmethods[$x] $bukkitmethods[$x]\n");
 				$class["methods"][$y]["bukkit"] = $bukkitmethods[$x];
 				$found = 1;
 			}
@@ -153,16 +152,17 @@ for ($c = 0; $c < count($classes); $c++) {
 	//$classes[$c] = $class;
 	unset($class);
 }
+fclose($fp);
 
 
 
 echo "Writing to new_conf/methods.csv...\n";
-@unlink("new_conf/methods.csv");
 $lines = file("conf/methods.csv");
+$fp = fopen("new_conf/methods.csv", "w");
 foreach ($lines as $line) {
 	list($searge,$name,$side,$desc) = explode(",", $line, 4);
 	if ($side != 1) {
-		file_put_contents("new_conf/methods.csv", $line, FILE_APPEND);
+		fwrite($fp, $line);
 		continue;
 	}
 	
@@ -187,9 +187,9 @@ foreach ($lines as $line) {
 		$bukkit = $name;
 	}
 	
-	file_put_contents("new_conf/methods.csv", "$searge,$bukkit,$side,$desc", FILE_APPEND);
+	fwrite($fp, "$searge,$bukkit,$side,$desc");
 }
-
+fclose($fp);
 
 
 
