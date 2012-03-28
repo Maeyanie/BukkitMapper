@@ -771,3 +771,6 @@ PathNavigate Navigation
 ChunkLoader OldChunkLoader
 GenLayerAddIsland GenLayerIsland
 GenLayerIsland LayerIsland
+EntityAIOcelotSit PathfinderGoalJumpOnBlock
+Packet202PlayerAbilities Packet202Abilities
+BlockWood BlockWood

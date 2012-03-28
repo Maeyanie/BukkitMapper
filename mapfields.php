@@ -104,9 +104,9 @@ for ($c = 0; $c < count($classes); $c++) {
 		if ($level == 1) {
 			// public int foo;
 			// public int bar = 1;
-			if (preg_match("/^\s*[\w\s\[\]<>]+ (\w+);/", $lines[$x], $matches)) {
+			if (preg_match("/^\s*[\w\s\[\]<>]+ (\w+)[\[\]]*;/", $lines[$x], $matches)) {
 				$mcpfields[] = $matches[1];
-			} else if (preg_match("/^\s*[\w\s\[\]<>]+ (\w+) =/", $lines[$x], $matches)) {
+			} else if (preg_match("/^\s*[\w\s\[\]<>]+ (\w+)[\[\]]* =/", $lines[$x], $matches)) {
 				$mcpfields[] = $matches[1];
 			}
 		}
@@ -141,7 +141,6 @@ for ($c = 0; $c < count($classes); $c++) {
 		$found = 0;
 		for ($y = 0; $y < count($class["fields"]); $y++) {
 			if ($class["fields"][$y]["mcp"] == $mcpfields[$x]) {
-				//echo "Mapped field $mcpfields[$x] -> $bukkitfields[$x]\n";
 				fwrite($fp, "$class[mcp] $mcpfields[$x] $bukkitfields[$x]\n");
 				$class["fields"][$y]["bukkit"] = $bukkitfields[$x];
 				$found = 1;
@@ -161,6 +160,7 @@ fclose($fp);
 echo "Writing to new_conf/fields.csv...\n";
 $lines = file("conf/fields.csv");
 $fp = fopen("new_conf/fields.csv", "w");
+$errors = 0;
 foreach ($lines as $line) {
 	list($searge,$name,$side,$desc) = explode(",", $line, 4);
 	if ($side != 1) {
@@ -174,9 +174,13 @@ foreach ($lines as $line) {
 		$fieldname = substr($fieldname, strrpos($fieldname, "/")+1);
 		//echo "$fieldname == $searge\n";
 		if ($fieldname == $searge) {
-			if (!isset($fields[$x]["bukkit"]))
-				die("Bukkit name not set for field:\n".print_r($fields[$x], true)."\n");
-			$bukkit = $fields[$x]["bukkit"];
+			if (!isset($fields[$x]["bukkit"])) {
+				echo("Bukkit name not set for field:\n".print_r($fields[$x], true)."\n");
+				$bukkit = $name;
+				$errors++;
+			} else {
+				$bukkit = $fields[$x]["bukkit"];
+			}
 			break;
 		}
 	}
@@ -192,5 +196,5 @@ fclose($fp);
 
 
 
-echo "All done.\n";
+echo "All done, $errors errors.\n";
 ?>
